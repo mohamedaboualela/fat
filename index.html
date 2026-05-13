@@ -323,24 +323,23 @@ function scheduleMusic(startT){
   mTout=setTimeout(()=>scheduleMusic(actx.currentTime), LOOP*1000);
 }
 
+// ── Audio Logic ──
+let myAudio = new Audio('music.mp3'); 
+let isPlaying = false;
+
 function toggleMusic(){
-  const btn=document.getElementById('musicBtn');
-  const lbl=document.getElementById('musicLabel');
-  const icon=document.getElementById('musicIcon');
-  if(!playing){
-    playing=true;
-    actx=new(window.AudioContext||window.webkitAudioContext)();
-    mGain=actx.createGain(); mGain.gain.setValueAtTime(0,actx.currentTime);
-    mGain.gain.linearRampToValueAtTime(1,actx.currentTime+2);
-    mGain.connect(actx.destination);
-    scheduleMusic(actx.currentTime+.1);
-    btn.classList.add('playing'); lbl.textContent='🎹 يعزف من أجلكِ';
-    icon.innerHTML='<span style="display:flex;align-items:center;gap:2px;height:20px"><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span></span>';
+  const btn = document.getElementById('musicBtn');
+  const lbl = document.getElementById('musicLabel');
+  if(!isPlaying){
+    myAudio.play().catch(e => console.log("المتصفح يحتاج تفاعل"));
+    isPlaying = true;
+    btn.classList.add('playing');
+    lbl.textContent = '🎹 يعزف الآن';
   } else {
-    playing=false; clearTimeout(mTout);
-    if(mGain){mGain.gain.linearRampToValueAtTime(0,actx.currentTime+1)}
-    setTimeout(()=>{nodes.forEach(n=>{try{n.disconnect()}catch(e){}});nodes=[];if(actx){actx.close();actx=null}},1200);
-    btn.classList.remove('playing'); lbl.textContent='🎹 بيانو هادئ'; icon.textContent='🎹';
+    myAudio.pause();
+    isPlaying = false;
+    btn.classList.remove('playing');
+    lbl.textContent = '🎹 تشغيل';
   }
 }
 
